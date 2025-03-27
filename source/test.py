@@ -1,5 +1,6 @@
 import numpy as np
 from os.path import join
+from sklearn.metrics import f1_score
 
 DATA_DIR = "data"
 MODELS_DIR = "models"

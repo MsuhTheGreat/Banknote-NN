@@ -10,10 +10,13 @@ df = pd.read_csv(url, header=None, names=columns)
 X = df.iloc[:, :-1].values
 Y = df.iloc[:, -1].values
 
-X = np.reshape(X, (4, -1))
-Y = np.reshape(Y, (1, -1))
+# X = X.T
+# Y = Y.reshape(1, -1)
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+
+X_train, X_test = X_train.T, X_test.T
+Y_train, Y_test = Y_train.reshape(1, -1), Y_test.reshape(1, -1)
 
 DATA_DIR = "data"
 MODELS_DIR = "models"
@@ -64,7 +67,7 @@ for i in range(EPOCHES):
 
     # Backward propagation for the rest of layers
     for l in range(LAYERS-1, 0, -1):
-        dZ_dict[f"dZ{l}"] = np.dot(W_dict[f"W{l+1}"], dZ_dict[f"dZ{l+1}"]) * (1 - np.square(A_dict[f"A{l}"]))
+        dZ_dict[f"dZ{l}"] = np.dot(W_dict[f"W{l+1}"].T, dZ_dict[f"dZ{l+1}"]) * (1 - np.square(A_dict[f"A{l}"]))
         dW_dict[f"dW{l}"] = 1/m * np.dot(dZ_dict[f"dZ{l}"], A_dict[f"A{l-1}"].T)
         db_dict[f"db{l}"] = 1/m * np.sum(dZ_dict[f"dZ{l}"], axis=1, keepdims=True)
         # Update gradients side by side
@@ -84,8 +87,10 @@ c = 1
 for i in W_dict:
     print(f"Final W{c}: {W_dict[i]}")
     np.save(join(MODELS_DIR, f"W{c}.npy"), W_dict[i])
+    c += 1
 
 c = 1
 for i in b_dict:
     print(f"Final b{c}: {b_dict[i]}")
     np.save(join(MODELS_DIR, f"b{c}.npy"), b_dict[i])
+    c += 1
