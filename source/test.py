@@ -3,7 +3,7 @@ from os.path import join
 
 DATA_DIR = "data"
 MODELS_DIR = "models"
-LAYERS = 3
+LAYERS = int(input("Number of layers used during training: "))
 
 # Load the necessary variables
 X_test = np.load(join(DATA_DIR, "X_test.npy"))
@@ -27,7 +27,7 @@ for l in range(1, LAYERS+1):
     else:
         A_dict[f"A{l}"] = (np.exp(Z_dict[f"Z{l}"]) - np.exp(-Z_dict[f"Z{l}"])) / (np.exp(Z_dict[f"Z{l}"]) + np.exp(-Z_dict[f"Z{l}"]))
 
-# Accuracy calculation using my own custom formula
+# Accuracy calculation using my own custom formula based on Loss
 J_sigmoid = 1 / (1 + np.exp(-J))
 my_accuracy = (1 - J_sigmoid) * 200
 print(f"Accuracy According To My Custom Formula: {my_accuracy}")
