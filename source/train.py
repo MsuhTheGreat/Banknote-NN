@@ -65,7 +65,8 @@ for i in range(EPOCHS):
         if l == LAYERS:
             A_dict[f"A{l}"] = 1 / (1 + np.exp(-Z_dict[f"Z{l}"]))
         else:
-            A_dict[f"A{l}"] = (np.exp(Z_dict[f"Z{l}"]) - np.exp(-Z_dict[f"Z{l}"])) / (np.exp(Z_dict[f"Z{l}"]) + np.exp(-Z_dict[f"Z{l}"]))
+            A_dict[f"A{l}"] = np.tanh(Z_dict[f"Z{l}"])
+            # A_dict[f"A{l}"] = (np.exp(Z_dict[f"Z{l}"]) - np.exp(-Z_dict[f"Z{l}"])) / (np.exp(Z_dict[f"Z{l}"]) + np.exp(-Z_dict[f"Z{l}"]))
     
     # Backward Propagation for the output layer
     dZ_dict[f"dZ{LAYERS}"] = A_dict[f"A{LAYERS}"] - Y_train
