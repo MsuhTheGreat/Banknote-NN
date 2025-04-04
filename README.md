@@ -74,7 +74,11 @@ You'll be asked to enter the number of layers used during training. The script w
 ✅ **Calculate Accuracy** using both traditional formula & **my own custom formula.** 📊
 
 #### **Example Output**  
+##### **When I used Tanh**  
 Accuracy According To My Custom Formula: 99.7289911031016  
+Accuracy According To Traditional Formula: 100.0  
+##### **When I used ReLU**  
+Accuracy According To My Custom Formula: 99.78671729471988  
 Accuracy According To Traditional Formula: 100.0  
 
 ## **📁 Project Structure**
