@@ -4,6 +4,7 @@ from os.path import join
 DATA_DIR = "data"
 MODELS_DIR = "models"
 LAYERS = int(input("Number of layers used during training: "))
+FUNCTION = input("Was Tanh used during training or ReLU? ").lower()
 
 # Load the necessary variables
 X_test = np.load(join(DATA_DIR, "X_test.npy"))
@@ -25,8 +26,10 @@ for l in range(1, LAYERS+1):
     if l == LAYERS:
         A_dict[f"A{l}"] = 1 / (1 + np.exp(-Z_dict[f"Z{l}"]))
     else:
-        A_dict[f"A{l}"] = np.tanh(Z_dict[f"Z{l}"])
-        # A_dict[f"A{l}"] = (np.exp(Z_dict[f"Z{l}"]) - np.exp(-Z_dict[f"Z{l}"])) / (np.exp(Z_dict[f"Z{l}"]) + np.exp(-Z_dict[f"Z{l}"]))
+        if FUNCTION == "tanh":
+            A_dict[f"A{l}"] = np.tanh(Z_dict[f"Z{l}"])
+        else:
+            A_dict[f"A{l}"] = np.maximum(0, Z_dict[f"Z{l}"])
 
 # Accuracy calculation using my own custom formula based on Loss
 J_sigmoid = 1 / (1 + np.exp(-J))

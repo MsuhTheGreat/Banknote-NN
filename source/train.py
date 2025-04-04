@@ -49,8 +49,15 @@ n0, m = X_train.shape
 n_dict = {f"n{i}": int(input(f"Number of neurons in layer {i}: ")) for i in range(1, LAYERS+1)}
 n_dict["n0"] = n0
 
+# Asking about activation function
+FUNCTION = input("Do you want to use Tanh in hidden layers or ReLU? ").lower()
+if FUNCTION == "tanh":
+    n_factor = 1
+else:
+    n_factor = 2
+
 # Using dictionaries to regulate variables as for loops will be used
-W_dict = {f"W{i}": np.random.rand(n_dict[f"n{i}"], n_dict[f"n{i-1}"]) * np.sqrt(1 / n_dict[f"n{i-1}"]) for i in range(1, LAYERS+1)}
+W_dict = {f"W{i}": np.random.rand(n_dict[f"n{i}"], n_dict[f"n{i-1}"]) * np.sqrt(n_factor / n_dict[f"n{i-1}"]) for i in range(1, LAYERS+1)}
 b_dict = {f"b{i}": np.zeros((n_dict[f"n{i}"], 1)) for i in range(1, LAYERS+1)}
 Z_dict = {}
 A_dict = {"A0": X_train}
@@ -65,8 +72,10 @@ for i in range(EPOCHS):
         if l == LAYERS:
             A_dict[f"A{l}"] = 1 / (1 + np.exp(-Z_dict[f"Z{l}"]))
         else:
-            A_dict[f"A{l}"] = np.tanh(Z_dict[f"Z{l}"])
-            # A_dict[f"A{l}"] = (np.exp(Z_dict[f"Z{l}"]) - np.exp(-Z_dict[f"Z{l}"])) / (np.exp(Z_dict[f"Z{l}"]) + np.exp(-Z_dict[f"Z{l}"]))
+            if FUNCTION == "tanh":
+                A_dict[f"A{l}"] = np.tanh(Z_dict[f"Z{l}"])
+            else:
+                A_dict[f"A{l}"] = np.maximum(0, Z_dict[f"Z{l}"])
     
     # Backward Propagation for the output layer
     dZ_dict[f"dZ{LAYERS}"] = A_dict[f"A{LAYERS}"] - Y_train
@@ -78,7 +87,10 @@ for i in range(EPOCHS):
 
     # Backward propagation for the rest of layers
     for l in range(LAYERS-1, 0, -1):
-        dZ_dict[f"dZ{l}"] = np.dot(W_dict[f"W{l+1}"].T, dZ_dict[f"dZ{l+1}"]) * (1 - np.square(A_dict[f"A{l}"]))
+        if FUNCTION == "tanh":
+            dZ_dict[f"dZ{l}"] = np.dot(W_dict[f"W{l+1}"].T, dZ_dict[f"dZ{l+1}"]) * (1 - np.square(A_dict[f"A{l}"]))
+        else:
+            dZ_dict[f"dZ{l}"] = np.dot(W_dict[f"W{l+1}"].T, dZ_dict[f"dZ{l+1}"]) * (Z_dict[f"Z{l}"] > 0).astype(int)
         dW_dict[f"dW{l}"] = 1/m * np.dot(dZ_dict[f"dZ{l}"], A_dict[f"A{l-1}"].T)
         db_dict[f"db{l}"] = 1/m * np.sum(dZ_dict[f"dZ{l}"], axis=1, keepdims=True)
         # Update gradients side by side
